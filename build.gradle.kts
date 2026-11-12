@@ -38,7 +38,7 @@ java {
 
 tasks.withType<ScalaCompile>().configureEach {
     scalaCompileOptions.additionalParameters.addAll(
-        listOf("-release:$javaTarget", "-J--add-modules=java.compiler")
+        listOf("-release:$javaTarget", "-J--add-modules=java.compiler", "-no-indent")
     )
     scalaCompileOptions.forkOptions.jvmArgs =
         (scalaCompileOptions.forkOptions.jvmArgs ?: emptyList()) + "--add-modules=java.compiler"

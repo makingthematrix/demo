@@ -4,12 +4,12 @@ import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.{Controller, Get}
 
 @Controller("/")
-class WelcomeController:
-
+class WelcomeController {
   @Get(produces = Array(MediaType.TEXT_HTML))
   def index(): String = WelcomeController.Page
+}
 
-object WelcomeController:
+object WelcomeController {
   val Page: String =
     """<!DOCTYPE html>
       |<html lang="en">
@@ -22,3 +22,4 @@ object WelcomeController:
       |</body>
       |</html>
       |""".stripMargin
+}

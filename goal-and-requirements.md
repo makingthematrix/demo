@@ -39,7 +39,8 @@ A notes REST API. A note has an id, a title, an optional body and a list of tags
 
 ## Success Conditions
 
-- The app compiles from Scala sources only (no Java left from the scaffold), starts on the JVM and
+- The app compiles from Scala sources only (no Java left from the scaffold; the one exception is
+  the Java control test described in Tech Notes), starts on the JVM and
   serves the API.
 - Micronaut HTTP tests written in Scala exercise every capability above and pass.
 
@@ -62,9 +63,9 @@ A notes REST API. A note has an id, a title, an optional body and a list of tags
 
 | Aspect | Choice | Rationale |
 |---|---|---|
-| Language | Scala 3.9.0 | The plugin's primary LTS compiler. The plugin artifact carries the full compiler version (`micronaut-inject-scala_3.9.0`), so the two upgrade together. |
+| Language | Scala 3.9.0, braces syntax (`-no-indent`) | The plugin's primary LTS compiler. The plugin artifact carries the full compiler version (`micronaut-inject-scala_3.9.0`), so the two upgrade together. Significant indentation is switched off by compiler option ([kubukoz's gist](https://gist.github.com/kubukoz/95dc1abd3f5bc028b95a3927d73c4698)), so indented code fails to compile. Existing code can be converted with a one-off `-no-indent -rewrite`. |
 | Framework | Micronaut platform 5.2.6 (Core 5.2.23), Netty runtime, plain HTTP on 8080 | The plugin 1.0.0-M1 is built against Core 5.2.21. Patch releases within 5.2.x are compatible, and pinning Core down would put it out of step with the platform's other modules. HTTPS is left to whatever fronts the app. |
 | Compile-time processing | `scalaCompilerPlugins("io.micronaut.scala:micronaut-inject-scala_3.9.0")` + `runtimeOnly("io.micronaut.scala:micronaut-runtime-scala")` | The plugin replaces the Java annotation processors. It must stay off the runtime classpath, because it bundles Micronaut and ASM classes. |
 | Serialization | Micronaut Serialization (Jackson) | Uses the plugin's introspections. `micronaut-runtime-scala` adds `Option`, collection and enum support. Optional fields default to `None`, because an omitted `Option` property otherwise arrives as `null` (micronaut-serialization#1416). |
 | Build | Gradle (Kotlin DSL), JDK 25 | Kept from the scaffold. The Gradle path is the only one the plugin's repository tests. |
-| Tests | JUnit 5 + `@MicronautTest`, in Scala. Inject `@Client` as a test-method parameter, never as an `@Inject var` | Micronaut Test has no ScalaTest integration, and the plugin guide points application tests at the normal Micronaut testing APIs. Plugin 1.0.0-M1 drops `@Client` from an `@Inject var`: the generated setter argument has no annotation metadata, so the client has no URL (`NoHostException`). `@Named` and `@Value` on a `var` are unaffected. |
+| Tests | JUnit 5 + `@MicronautTest`, in Scala. Inject `@Client` as a test-method parameter, never as an `@Inject var` | Micronaut Test has no ScalaTest integration, and the plugin guide points application tests at the normal Micronaut testing APIs. Plugin 1.0.0-M1 drops `@Client` from an `@Inject var`: the generated setter argument has no annotation metadata, so the client has no URL (`NoHostException`). `@Named` and `@Value` on a `var` are unaffected. `WelcomeTest.clientOnInjectVarLosesItsUrl` pins the bug: it expects the `NoHostException`, so it fails once a plugin upgrade fixes it. That failure is the signal to drop the test and the parameter workaround. `WelcomeJavaTest` is its control: the same `@Inject @Client("/")` field in Java, compiled by javac with `micronaut-inject-java` and not by the plugin, gets a working client. This is the only Java source in the project. |
