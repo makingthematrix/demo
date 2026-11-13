@@ -20,12 +20,12 @@ class WelcomeJavaTest {
     HttpClient goodClient;
 
     @Test
-    void clientOnInjectFieldKeepsItsUrl() {
-        HttpResponse<String> response = 
+    void clientAsInjectVar() {
+        HttpResponse<String> response =
             goodClient
                 .toBlocking()
                 .exchange(HttpRequest.GET("/"), String.class);
-       
+
         assertEquals(HttpStatus.OK, response.getStatus());
     }
 }

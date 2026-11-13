@@ -19,7 +19,7 @@ class WelcomeTest {
 	var badClient: HttpClient = uninitialized
 
   @Test
-  def clientOnInjectVarLosesItsUrl(): Unit = {
+  def clientAsInjectVar(): Unit = {
     val error = assertThrows(
       classOf[NoHostException],
       () => {
@@ -34,7 +34,7 @@ class WelcomeTest {
   }
 
 	@Test
-	def clientAsParameterKeepsItsUrl(@Client("/") client: HttpClient): Unit = {
+	def clientAsParameter(@Client("/") client: HttpClient): Unit = {
 		val response = client.toBlocking.exchange(HttpRequest.GET[Any]("/"), classOf[String])
 
 		assertEquals(HttpStatus.OK, response.getStatus)
